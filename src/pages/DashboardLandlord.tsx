@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +38,33 @@ const DashboardLandlord = () => {
     });
 
     return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  useEffect(() => {
+    const checkProperties = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      const { data: properties, error } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("landlord_id", user.id);
+
+      if (error) {
+        console.error("Error fetching properties", error);
+        return;
+      }
+
+      if (!properties || properties.length === 0) {
+        navigate("/landlord/add-property");
+      }
+    };
+
+    checkProperties();
   }, [navigate]);
 
   const handleSignOut = async () => {
