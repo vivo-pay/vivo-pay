@@ -61,7 +61,7 @@ const AddProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast({
         title: "שגיאה",
@@ -75,12 +75,29 @@ const AddProperty = () => {
     console.log("Adding property:", formData);
 
     try {
-      // For now, just show success message since we haven't set up the database yet
+      const { error } = await supabase.from("properties").insert([{
+        landlord_id: user.id,
+        address: formData.address,
+        city: formData.city,
+        num_units: formData.numUnits,
+      }]);
+
+      if (error) {
+        console.error("Error adding property:", error);
+        toast({
+          title: "שגיאה",
+          description: "אירעה שגיאה בהוספת הנכס",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       toast({
         title: "הנכס נוסף בהצלחה!",
         description: "הנכס החדש שלך נוסף למערכת",
       });
-      
+
       // Reset form
       setFormData({
         address: "",
@@ -88,11 +105,9 @@ const AddProperty = () => {
         numUnits: 1,
         description: "",
       });
-      
-      // Navigate back to dashboard after a short delay
-      setTimeout(() => {
-        navigate('/dashboard-landlord');
-      }, 2000);
+
+      // Navigate back to dashboard
+      navigate("/dashboard-landlord");
       
     } catch (error: any) {
       console.error("Error adding property:", error);
