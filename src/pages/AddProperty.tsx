@@ -106,8 +106,8 @@ const AddProperty = () => {
         description: "",
       });
 
-      // Navigate back to dashboard
-      navigate("/dashboard-landlord");
+      // Navigate back to dashboard with full page reload
+      window.location.href = "/dashboard-landlord";
       
     } catch (error: any) {
       console.error("Error adding property:", error);
