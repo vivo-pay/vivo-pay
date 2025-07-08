@@ -22,6 +22,9 @@ const Index = () => {
             <Link to="/login" className="text-gray-600 hover:text-vivo-teal-600 transition-colors">
               התחברות
             </Link>
+            <Link to="/dashboard-landlord" className="text-gray-600 hover:text-vivo-orange-600 transition-colors">
+              דשבורד
+            </Link>
             <Link to="/register">
               <Button className="bg-gradient-to-r from-vivo-teal-500 to-vivo-teal-600 hover:from-vivo-teal-600 hover:to-vivo-teal-700 text-white">
                 הרשמה
