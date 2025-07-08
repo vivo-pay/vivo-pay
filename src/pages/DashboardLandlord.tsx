@@ -51,20 +51,25 @@ const DashboardLandlord = () => {
       }
 
       console.log("Fetching properties for user:", user.id);
+      console.log("Current environment:", window.location.origin);
+      
       const { data, error } = await supabase
         .from("properties")
         .select("*")
         .eq("landlord_id", user.id);
 
+      console.log("Properties query result:", { data, error });
+      
       if (error) {
         console.error("Error fetching properties:", error);
         toast({
           title: "שגיאה",
-          description: "לא ניתן לטעון את הנכסים",
+          description: `לא ניתן לטעון את הנכסים: ${error.message}`,
           variant: "destructive",
         });
       } else {
-        console.log("Properties fetched:", data);
+        console.log("Properties fetched successfully:", data);
+        console.log("Number of properties:", data?.length || 0);
         setProperties(data || []);
       }
 
