@@ -11,6 +11,8 @@ import type { User, Session } from '@supabase/supabase-js';
 const DashboardLandlord = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loadingProperties, setLoadingProperties] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -41,31 +43,28 @@ const DashboardLandlord = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const checkProperties = async () => {
+    const fetchProperties = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;
-      if (!user) {
-        navigate("/login");
-        return;
-      }
 
-      const { data: properties, error } = await supabase
+      if (!user) return;
+
+      const { data, error } = await supabase
         .from("properties")
         .select("*")
         .eq("landlord_id", user.id);
 
       if (error) {
-        console.error("Error fetching properties", error);
-        return;
+        console.error("Error fetching properties:", error);
+      } else {
+        setProperties(data || []);
       }
 
-      if (!properties || properties.length === 0) {
-        navigate("/landlord/add-property");
-      }
+      setLoadingProperties(false);
     };
 
-    checkProperties();
-  }, [navigate]);
+    fetchProperties();
+  }, []);
 
   const handleSignOut = async () => {
     console.log("Signing out...");
@@ -232,16 +231,33 @@ const DashboardLandlord = () => {
               </Link>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <Home className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">אין נכסים עדיין</h3>
-                <p className="text-gray-500 mb-4">התחל בהוספת הנכס הראשון שלך</p>
-                <Link to="/landlord/add-property">
-                  <Button className="bg-vivo-teal-500 hover:bg-vivo-teal-600">
-                    הוסף נכס ראשון
-                  </Button>
-                </Link>
-              </div>
+              {loadingProperties ? (
+                <p className="text-center py-8">טוען נכסים...</p>
+              ) : properties.length === 0 ? (
+                <div className="text-center py-12">
+                  <Home className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">לא נמצאו נכסים</h3>
+                  <p className="text-gray-500 mb-4">התחל בהוספת הנכס הראשון שלך</p>
+                  <Link to="/landlord/add-property">
+                    <Button className="bg-vivo-teal-500 hover:bg-vivo-teal-600">
+                      הוסף נכס ראשון
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {properties.map((property) => (
+                    <Card key={property.id} className="border p-4">
+                      <div className="text-lg font-semibold">{property.address}</div>
+                      <div className="text-sm text-gray-600">{property.city}</div>
+                      <div className="text-sm">יחידות דיור: {property.num_units}</div>
+                      <div className="text-sm text-gray-500">
+                        נוצר בתאריך: {new Date(property.created_at).toLocaleDateString()}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
