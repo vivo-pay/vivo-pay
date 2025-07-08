@@ -61,6 +61,8 @@ const AddProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log("*** NEW CODE VERSION RUNNING ***");
 
     if (!user) {
       toast({
