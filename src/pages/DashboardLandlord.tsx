@@ -45,19 +45,22 @@ const DashboardLandlord = () => {
 
   useEffect(() => {
     const fetchProperties = async () => {
+      console.log("fetchProperties called - pathname:", location.pathname);
       const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user;
+      const currentUser = sessionData?.session?.user;
 
-      if (!user) return;
+      if (!currentUser) return;
 
+      console.log("Fetching properties for user:", currentUser.id);
       const { data, error } = await supabase
         .from("properties")
         .select("*")
-        .eq("landlord_id", user.id);
+        .eq("landlord_id", currentUser.id);
 
       if (error) {
         console.error("Error fetching properties:", error);
       } else {
+        console.log("Properties fetched:", data);
         setProperties(data || []);
       }
 
