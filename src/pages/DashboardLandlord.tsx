@@ -45,20 +45,24 @@ const DashboardLandlord = () => {
 
   useEffect(() => {
     const fetchProperties = async () => {
-      console.log("fetchProperties called - pathname:", location.pathname);
-      const { data: sessionData } = await supabase.auth.getSession();
-      const currentUser = sessionData?.session?.user;
+      if (!user?.id) {
+        setLoadingProperties(false);
+        return;
+      }
 
-      if (!currentUser) return;
-
-      console.log("Fetching properties for user:", currentUser.id);
+      console.log("Fetching properties for user:", user.id);
       const { data, error } = await supabase
         .from("properties")
         .select("*")
-        .eq("landlord_id", currentUser.id);
+        .eq("landlord_id", user.id);
 
       if (error) {
         console.error("Error fetching properties:", error);
+        toast({
+          title: "שגיאה",
+          description: "לא ניתן לטעון את הנכסים",
+          variant: "destructive",
+        });
       } else {
         console.log("Properties fetched:", data);
         setProperties(data || []);
@@ -68,7 +72,7 @@ const DashboardLandlord = () => {
     };
 
     fetchProperties();
-  }, [user?.id, location.pathname]);
+  }, [user?.id, toast]);
 
   const handleSignOut = async () => {
     console.log("Signing out...");
