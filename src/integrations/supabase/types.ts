@@ -248,15 +248,7 @@ export type Database = {
           landlord_id?: string | null
           num_units?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "properties_landlord_id_fkey"
-            columns: ["landlord_id"]
-            isOneToOne: false
-            referencedRelation: "landlords"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       tenants: {
         Row: {
