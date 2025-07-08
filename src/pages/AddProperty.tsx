@@ -73,26 +73,35 @@ const AddProperty = () => {
 
     setLoading(true);
     console.log("Adding property:", formData);
+    console.log("User ID:", user.id);
+    console.log("Current environment:", window.location.origin);
 
     try {
-      const { error } = await supabase.from("properties").insert([{
+      const propertyData = {
         landlord_id: user.id,
         address: formData.address,
         city: formData.city,
         num_units: formData.numUnits,
-      }]);
+      };
+      
+      console.log("Sending to Supabase:", propertyData);
+      
+      const { data, error } = await supabase.from("properties").insert([propertyData]).select();
+
+      console.log("Supabase response:", { data, error });
 
       if (error) {
         console.error("Error adding property:", error);
         toast({
           title: "שגיאה",
-          description: "אירעה שגיאה בהוספת הנכס",
+          description: `אירעה שגיאה בהוספת הנכס: ${error.message}`,
           variant: "destructive",
         });
         setLoading(false);
         return;
       }
 
+      console.log("Property added successfully:", data);
       toast({
         title: "הנכס נוסף בהצלחה!",
         description: "הנכס החדש שלך נוסף למערכת",
