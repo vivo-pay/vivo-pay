@@ -174,7 +174,7 @@ const DashboardLandlord = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-gray-800">0</div>
+              <div className="text-3xl font-bold text-gray-800">{properties.length}</div>
               <p className="text-sm text-gray-600">נכסים בניהול</p>
             </CardContent>
           </Card>
